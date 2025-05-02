@@ -101,17 +101,20 @@ async function seedRevenue() {
   return insertedRevenue;
 }
 
+async function seedDatabase() {
+  await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+
+  await seedUsers();
+  await seedCustomers();
+  await seedInvoices();
+  await seedRevenue();
+}
+
 export async function GET() {
   try {
-    const result = await sql.begin((sql) => [
-      seedUsers(),
-      seedCustomers(),
-      seedInvoices(),
-      seedRevenue(),
-    ]);
-
+    await seedDatabase();
     return Response.json({ message: "Database seeded successfully" });
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    return Response.json({ error: String(error) }, { status: 500 });
   }
 }
