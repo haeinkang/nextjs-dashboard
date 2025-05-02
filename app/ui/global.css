@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+Firefox에서 숫자 입력에 자동으로 붙는 스핀 버튼을 제거합니다 
+(-moz-appearance: textfield). 
+*/
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* 
+WebKit 엔진을 사용하는 브라우저(Chrome, Safari등)에서 
+input[type='number']에 표시되는 스핀 버튼(위/아래 화살표)을 숨깁니다.
+margin: 0;은 레이아웃이 깨지는 것을 방지합니다.
+*/
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
