@@ -74,16 +74,29 @@ export async function createInvoice(prevState: State, formData: FormData) {
 // Use Zod to update the expected types
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export async function updateInvoice(id: string, formData: FormData) {
+export async function updateInvoice(
+  id: string,
+  prevState: State,
+  formData: FormData
+) {
+  // Validate form fields using Zod
+  const validatedFields = UpdateInvoice.safeParse({
+    customerId: formData.get("customerId"),
+    amount: formData.get("amount"),
+    status: formData.get("status"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing Fiels. Failed to Update Invoice.",
+    };
+  }
+
+  const { customerId, amount, status } = validatedFields.data;
+  const amountInCents = amount * 100;
+
   try {
-    const { customerId, amount, status } = UpdateInvoice.parse({
-      customerId: formData.get("customerId"),
-      amount: formData.get("amount"),
-      status: formData.get("status"),
-    });
-
-    const amountInCents = amount * 100;
-
     await sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
@@ -91,8 +104,12 @@ export async function updateInvoice(id: string, formData: FormData) {
   `;
   } catch (error) {
     console.error(error);
+    return {
+      mesaage: "Database Error: Failed to Updated Invoice",
+    };
   }
 
+  // Revalidate the cache for the invoices page and redirect the user.
   revalidatePath("/dashboard/invoices");
   redirect("/dashboard/invoices");
 }
