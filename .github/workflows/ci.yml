@@ -1,24 +1,57 @@
 name: CI
 on: [push]
+
 jobs:
   lhci:
     name: Lighthouse
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Use Node.js 16.x
+
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      - name: npm install, build
+          node-version: 22.x
+
+      - name: npm install
+        run: npm install
+
+      - name: Wake up Neon DB
         run: |
-          npm install
-          npm run build
+          echo "Waking up Neon DB..."
+          echo "Target host: $PGHOST_UNPOOLED"
+          for i in {1..10}; do
+            nc -zv ${{ secrets.PGHOST_UNPOOLED }} 5432 && break
+            echo "Waiting for DB to wake up..."
+            sleep 2
+          done
+
+      - name: npm run build
+        run: npm run build
+
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.15.x
           lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+          PGHOST: ${{ secrets.PGHOST }}
+          PGHOST_UNPOOLED: ${{ secrets.PGHOST_UNPOOLED }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE }}
+          POSTGRES_URL_NO_SSL: ${{ secrets.POSTGRES_URL_NO_SSL }}
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+          AUTH_URL: ${{ secrets.AUTH_URL }}

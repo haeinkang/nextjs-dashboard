@@ -4,7 +4,7 @@ module.exports = {
       url: ["http://localhost:3000"],
     },
     upload: {
-      startServerCommand: "npn run start",
+      startServerCommand: "npm run start",
       target: "temporary-public-storage",
     },
   },
