@@ -1,21 +1,32 @@
 name: CI
 on: [push]
+
 jobs:
   lhci:
     name: Lighthouse
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+
       - name: Use Node.js 22.x
         uses: actions/setup-node@v3
         with:
           node-version: 22.x
-      - name: npm install, build
+
+      - name: npm install
+        run: npm install
+
+      - name: Wake up Neon DB
         run: |
-          npm install
-          npm run build
+          echo "Waking up Neon DB..."
+          curl --retry 5 --retry-delay 2 https://${{ secrets.PGHOST_UNPOOLED }} || true
+
+      - name: npm run build
+        run: npm run build
+
       - name: run Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.15.x
