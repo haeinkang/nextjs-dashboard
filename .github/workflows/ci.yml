@@ -22,5 +22,20 @@ jobs:
           lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+          PGHOST: ${{ PGHOST }}
+          PGHOST_UNPOOLED: ${{ PGHOST_UNPOOLED }}
+          PGUSER: ${{ PGUSER }}
+          PGDATABASE: ${{ PGDATABASE }}
+          PGPASSWORD: ${{ PGPASSWORD }}
+          POSTGRES_URL: ${{ POSTGRES_URL }}
+          POSTGRES_URL_NON_POOLING: ${{ POSTGRES_URL_NON_POOLING }}
+          POSTGRES_USER: ${{ POSTGRES_USER }}
+          POSTGRES_HOST: ${{ POSTGRES_HOST }}
+          POSTGRES_PASSWORD: ${{ POSTGRES_PASSWORD }}
+          POSTGRES_DATABASE: ${{ POSTGRES_DATABASE }}
+          POSTGRES_URL_NO_SSL: ${{ POSTGRES_URL_NO_SSL }}
+          POSTGRES_PRISMA_URL: ${{ POSTGRES_PRISMA_URL }}
+          AUTH_URL: ${{ AUTH_URL }}
